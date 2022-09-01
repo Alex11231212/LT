@@ -1,0 +1,15 @@
+version: "3.6"
+services:
+    python3.10:
+        build: .
+        ports:
+            - "8000:8000"
+        volumes:
+            - ./:/usr/src/app
+
+
+
+
+
+
+
