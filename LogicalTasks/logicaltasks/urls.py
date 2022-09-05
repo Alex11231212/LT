@@ -7,7 +7,6 @@ app_name = 'logicaltasks'
 
 urlpatterns = [
     path('', views.index_view, name='index'),
-    path('tasks/<str:level>/', views.TaskList.as_view(), name='task_list'),
-    path('tasks/<slug:task>/', views.TaskDetail.as_view(), name='task_detail'),
-
+    path('tasks/<str:level>/', views.TaskListView.as_view(), name='task_list'),
+    path('tasks/<slug:task>/', views.TaskDetailView.as_view(), name='task_detail'),
     ]

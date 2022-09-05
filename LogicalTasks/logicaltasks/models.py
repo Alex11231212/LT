@@ -23,15 +23,20 @@ class Comment(models.Model):
                                        null=True,
                                        )
 
+class Image(models.Model):
+    title = models.CharField(max_length=30)
+    photo = models.ImageField(upload_to='pics')
+
 
 class Task(models.Model):
     title = models.CharField(max_length=200,)
     category = models.ForeignKey(Category, on_delete=models.RESTRICT,
                                  help_text='Выберите категорию из списка предложенных',)
+    author = models.ForeignKey(User, default=None, on_delete=models.SET_DEFAULT, blank=True)
     text = models.TextField(max_length=1000, help_text='Введите условие задачи',)
     answer = models.CharField(max_length=255, help_text='Введите правильный ответ',)
     DIFFICULTY_LEVEL = (
-        ('e', 'Eazy'),
+        ('e', 'Easy'),
         ('m', 'Medium'),
         ('h', 'Hard'),
         ('u', 'Undefined'),
@@ -44,7 +49,8 @@ class Task(models.Model):
     )
     likes = models.IntegerField(auto_created=False,)
     dislikes = models.IntegerField(auto_created=False,)
-    slug = models.SlugField(max_length=100)
+    image = models.ImageField()
+    slug = models.SlugField(max_length=100,)
 
 
     def __str__(self):

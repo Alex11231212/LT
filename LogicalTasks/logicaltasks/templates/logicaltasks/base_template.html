@@ -22,9 +22,9 @@
             Задачи
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{% url'logicaltasks:task_list' e%}">Простые</a></li>
-            <li><a class="dropdown-item" href="{% url'logicaltasks:task_list' m%}">Средней сложности</a></li>
-            <li><a class="dropdown-item" href="{% url'logicaltasks:task_list' h%}">Взрыв мозга</a></li>
+            <li><a class="dropdown-item" href="{% url 'logicaltasks:task_list' 'easy' %}">Простые</a></li>
+            <li><a class="dropdown-item" href="{% url 'logicaltasks:task_list' 'medium' %}">Средней сложности</a></li>
+            <li><a class="dropdown-item" href="{% url 'logicaltasks:task_list' 'hard' %}">Взрыв мозга</a></li>
           </ul>
         </li>
         <li class="nav-item">

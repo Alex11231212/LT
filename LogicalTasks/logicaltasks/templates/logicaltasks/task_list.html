@@ -1,0 +1,11 @@
+{% extends "logicaltasks/base_template.html" %}
+{% block content %}
+
+{% if task_list %}
+<ul>
+{% for task in task_list %}
+  <li>{{ task.name }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+{% endblock %}
