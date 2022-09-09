@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 from environs import Env
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +27,9 @@ SECRET_KEY = 'django-insecure-1&kohaxcl5!y@0=ab_@yv&-w$z1it$jr%9+nf0gqvxkjp(!(j&
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Application definition
@@ -55,7 +59,7 @@ ROOT_URLCONF = 'LogicalTasks.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

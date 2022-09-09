@@ -6,8 +6,8 @@ from .models import Task
 
 
 def index_view(request):
-
-    return render(request, 'logicaltasks/base_template.html', context={})
+    num_tasks = Task.objects.count()
+    return render(request, 'logicaltasks/index.html', context={'num_tasks':num_tasks})
 
 
 class TaskListView(generic.ListView):
