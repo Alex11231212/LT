@@ -11,15 +11,17 @@ def index_view(request):
 
 
 class TaskListView(generic.ListView):
+
     def get_queryset(self):
-        levels_map = {
-            'easy': 'e',
-            'medium': 'm',
-            'hard': 'h',
-        }
         level = self.kwargs['level']
-        return Task.objects.filter(difficulty__iexact=levels_map.get(level))
+        return Task.objects.filter(difficulty__iexact=level)
 
 
 class TaskDetailView(generic.DetailView):
-    pass
+    model = Task
+
+    tasks = Task.objects.select_related('author', 'image', 'image_answer')\
+            .prefetch_related('comment_set')
+
+    def get_object(self, queryset=tasks):
+        return queryset.get(slug__iexact=self.kwargs['task_slug'])

@@ -11,19 +11,6 @@ from django.urls import reverse
 #         return self.name
 
 
-class Comment(models.Model):
-    author = models.ForeignKey(User, on_delete=models.SET_NULL,
-                               null=True, blank=True,)
-    text = models.TextField(max_length=1000,)
-    likes = models.IntegerField(auto_created=False, default=0)
-    dislikes = models.IntegerField(auto_created=False, default=0)
-    nested_comment = models.ForeignKey('Comment',
-                                       on_delete=models.CASCADE,
-                                       blank=True,
-                                       null=True,
-                                       )
-
-
 class Image(models.Model):
     title = models.CharField(max_length=30)
     photo = models.ImageField(upload_to='pics')
@@ -54,15 +41,15 @@ class Task(models.Model):
                                      on_delete=models.SET_NULL,
                                      help_text='Выберите картинку - ответ',)
     DIFFICULTY_LEVEL = (
-        ('e', 'Easy'),
-        ('m', 'Medium'),
-        ('h', 'Hard'),
-        ('u', 'Undefined'),
+        ('easy', 'Easy'),
+        ('medium', 'Medium'),
+        ('hard', 'Hard'),
+        ('undefined', 'Undefined'),
     )
     difficulty = models.CharField(
-        max_length=1,
+        max_length=10,
         choices=DIFFICULTY_LEVEL,
-        default='u',
+        default='undefined',
         help_text='Сложность задачи',
     )
     likes = models.IntegerField(auto_created=False, default=0)
@@ -74,10 +61,28 @@ class Task(models.Model):
     slug = models.SlugField(max_length=255, unique=True,
                             db_index=True, verbose_name='URL')
 
+
     def __str__(self):
         """String for representing the Model object."""
         return self.title
 
     def get_task_url(self):
-        return reverse('logicaltasks:task_detail', args=[str(self.slug)])
+        return reverse('logicaltasks:task_detail',
+                       kwargs={
+                           'level': self.difficulty,
+                           'task_slug': self.slug,
+                       }
+                       )
 
+
+class Comment(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL,)
+    text = models.TextField(max_length=1000,)
+    likes = models.IntegerField(auto_created=False, default=0)
+    dislikes = models.IntegerField(auto_created=False, default=0)
+    nested_comment = models.ForeignKey('Comment',
+                                       on_delete=models.CASCADE,
+                                       blank=True,
+                                       null=True,
+                                       )

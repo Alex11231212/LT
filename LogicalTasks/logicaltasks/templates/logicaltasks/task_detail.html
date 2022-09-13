@@ -1,0 +1,34 @@
+{% extends "logicaltasks/base_template.html" %}
+{% block content %}
+{% if task %}
+<h3>{{ task.title }}</h3>
+<br>
+{{ task.text }}
+<br>
+{% if task.image is not none %}
+  <img src="{{ task.image.photo.url }}"/>
+{% endif %}
+<p>
+  <a class="btn btn-primary"
+     data-bs-toggle="collapse"
+     href="#collapseExample"
+     role="button"
+     aria-expanded="false"
+     aria-controls="collapseExample"
+     style="background-color: grey">
+    Посмотреть ответ
+  </a>
+</p>
+<div class="collapse" id="collapseExample">
+  <div class="card card-body">
+    {% if task.imgage_answer is not none %}
+    {{ task.image_answer.url }}
+    {% else %}
+    {{ task.answer }}
+    {% endif %}
+
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}
