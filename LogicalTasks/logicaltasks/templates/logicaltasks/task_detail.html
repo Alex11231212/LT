@@ -1,13 +1,15 @@
 {% extends "logicaltasks/base_template.html" %}
 {% block content %}
 {% if task %}
-<h3>{{ task.title }}</h3>
 <br>
-{{ task.text }}
+<h2>{{ task.title }}</h2>
+<br>
+<p style="text-align: left">{{ task.text }}</p>
 <br>
 {% if task.image is not none %}
-  <img src="{{ task.image.photo.url }}"/>
+  <img src="{{ task.image.photo.url }}" class="rounded mx-auto d-block"/>
 {% endif %}
+<br>
 <p>
   <a class="btn btn-primary"
      data-bs-toggle="collapse"
@@ -20,15 +22,47 @@
   </a>
 </p>
 <div class="collapse" id="collapseExample">
-  <div class="card card-body">
-    {% if task.imgage_answer is not none %}
-    {{ task.image_answer.url }}
+  <div class="card card-body" >
+    {% if task.image_answer is not none %}
+    <p style="text-align: center">
+      <img src="{{ task.image_answer.photo.url }}"
+           style="height: max-content; width: max-content"/>
+    </p>
     {% else %}
-    {{ task.answer }}
+    <p style="text-align: left">
+      {{ task.answer }}
+    </p>
     {% endif %}
-
   </div>
 </div>
+<br>
+
+<div class="container">
+  <div class="row">
+    <div class="col-10"></div>
+    <div class="col-1">
+      <form action="{% url 'logicaltasks:reaction' task.id %}" method="post">
+        {% csrf_token %}
+        <button style="background-color: transparent; border: none; box-shadow: none"
+                type="submit" name="task" value="like">
+          <i class="far fa-thumbs-up"><span style="margin-left: 5px">{{ task.likes.count }}</span></i>
+        </button>
+      </form>
+    </div>
+    <div class="col-1">
+      <form action="{% url 'logicaltasks:reaction' task.id %}" method="post">
+        {% csrf_token %}
+        <button style="background-color: transparent; border: none; box-shadow: none"
+                type="submit" name="task" value="dislike">
+          <i class="far fa-thumbs-down"><span style="margin-left: 5px">{{ task.dislikes.count }}</span></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
 
 {% endif %}
 {% endblock %}

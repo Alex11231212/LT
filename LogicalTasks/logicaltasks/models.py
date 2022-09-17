@@ -52,8 +52,8 @@ class Task(models.Model):
         default='undefined',
         help_text='Сложность задачи',
     )
-    likes = models.IntegerField(auto_created=False, default=0)
-    dislikes = models.IntegerField(auto_created=False, default=0)
+    likes = models.ManyToManyField(User, blank=True, related_name='task_likes')
+    dislikes = models.ManyToManyField(User, blank=True, related_name='task_dislikes')
     image = models.ForeignKey(Image, blank=True,
                               null=True,
                               on_delete=models.SET_NULL,
@@ -76,11 +76,11 @@ class Task(models.Model):
 
 
 class Comment(models.Model):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE,)
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL,)
     text = models.TextField(max_length=1000,)
-    likes = models.IntegerField(auto_created=False, default=0)
-    dislikes = models.IntegerField(auto_created=False, default=0)
+    likes = models.ManyToManyField(User, blank=True, related_name='comment_likes')
+    dislikes = models.ManyToManyField(User, blank=True, related_name='comment_dislikes')
     nested_comment = models.ForeignKey('Comment',
                                        on_delete=models.CASCADE,
                                        blank=True,
