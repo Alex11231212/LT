@@ -1,11 +1,19 @@
+import json
+
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.contenttypes.models import ContentType
+from django.forms import ModelForm
 from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 from django.urls import reverse
 from django.views import generic, View
-from .models import Task
-from django.http import HttpResponseRedirect
+
+from .forms import CommentForm
+from .models import Task, LikeDislike, Comment
+from django.http import HttpResponseRedirect, HttpResponse
+
 
 def index_view(request):
     num_tasks = Task.objects.count()
@@ -13,86 +21,68 @@ def index_view(request):
 
 
 class TaskListView(generic.ListView):
-
     def get_queryset(self):
         level = self.kwargs['level']
         return Task.objects.filter(difficulty=level)
 
+@login_required
+def task_detail_view(request, task_slug):
+    template = 'logicaltasks/task_detail.html'
+    tasks = Task.objects.select_related('author', 'image', 'image_answer') \
+        .prefetch_related('comment_set')
+    task = get_object_or_404(tasks, slug=task_slug)
 
-class TaskDetailView(generic.DetailView):
-    model = Task
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST)
 
-    tasks = Task.objects.select_related('author', 'image', 'image_answer')\
-            .prefetch_related('comment_set')
+        if comment_form.is_valid():
+            text = comment_form.cleaned_data['text']
+            new_comment = Comment.objects.create(
+                task=task,
+                author=request.user,
+                text=text,
+            )
+            new_comment.save()
+            return HttpResponseRedirect(request.path_info)
+    elif request.method == 'GET':
+        comment_form = CommentForm()
 
-    def get_object(self, queryset=tasks):
-        return queryset.get(slug=self.kwargs['task_slug'])
-
-
-def reaction_view(request, reaction_on_task_or_comment):
-    if reaction_on_task_or_comment in ['task_like', 'task_dislike']:
-        task = get_object_or_404(Task, slug=request.POST.get('slug'))
-        task.likes += 1
-        task.save()
-        return HttpResponseRedirect(task.get_task_url())
-
-
-class Reaction(LoginRequiredMixin, View):
-    def post(self, request, pk):
-        user = request.user
-        options = {
-            'task': self.task_reaction,
-            'comment': self.comment_reaction,
-            'article': self.article_reaction,
-        }
-        for k, v in options.items():
-            if request.POST.get(k) is not None:
-                return options[k](user=user, reaction=request.POST.get(k), pk=pk)
-
-    def task_reaction(self, user, reaction, pk):
-        is_liked = False
-        is_disliked = False
-
-        task = Task.objects.prefetch_related('likes', 'dislikes').get(pk=pk)
-        if reaction == 'like':
-            for u in task.dislikes.all():
-                if u == user:
-                    is_disliked = True
-                    break
-            if is_disliked:
-                task.dislikes.remove(user)
-
-            for u in task.likes.all():
-                if u == user:
-                    is_liked = True
-                    break
-            if not is_liked:
-                task.likes.add(user)
-            if is_liked:
-                task.likes.remove(user)
-
-        elif reaction == 'dislike':
-            for u in task.likes.all():
-                if u == user:
-                    is_liked = True
-                    break
-            if is_liked:
-                task.likes.remove(user)
-
-            for u in task.dislikes.all():
-                if u == user:
-                    is_disliked = True
-                    break
-            if not is_disliked:
-                task.dislikes.add(user)
-            if is_disliked:
-                task.dislikes.remove(user)
-
-        return HttpResponseRedirect(task.get_task_url())
+    return render(request, template, context={
+        'task': task,
+        'form': comment_form,
+    })
 
 
-    def comment_reaction(self, ):
-        pass
+class ReactionView(LoginRequiredMixin, View):
+    model = None  # Data Model - Articles or Comments
+    vote_type = None  # Vote type Like/Dislike
 
-    def article_reaction(self, ):
-        pass
+    def post(self, request, pk, **kwargs):
+        obj = self.model.objects.get(pk=pk)
+        # GenericForeignKey does not support get_or_create
+        try:
+            likedislike = LikeDislike.objects.get(
+                content_type=ContentType.objects.get_for_model(obj),
+                object_id=obj.id, user=request.user)
+            if likedislike.vote is not self.vote_type:
+                likedislike.vote = self.vote_type
+                likedislike.save(update_fields=['vote'])
+                result = True
+            else:
+                likedislike.delete()
+                result = False
+        except LikeDislike.DoesNotExist:
+            obj.reaction.create(user=request.user, vote=self.vote_type)
+            result = True
+
+        return HttpResponse(
+            json.dumps({
+                "result": result,
+                "like_count": obj.reaction.likes().count(),
+                "dislike_count": obj.reaction.dislikes().count(),
+                "sum_rating": obj.reaction.sum_rating()
+            }),
+            content_type="application/json"
+        )
+
+

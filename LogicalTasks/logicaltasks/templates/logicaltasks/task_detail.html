@@ -1,6 +1,12 @@
 {% extends "logicaltasks/base_template.html" %}
 {% block content %}
+{% load static %}
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<script src="{% static 'logicaltasks/csrf.js' %}"></script>
+<script src="{% static 'logicaltasks/likedislike.js' %}"></script>
+
 {% if task %}
+
 <br>
 <h2>{{ task.title }}</h2>
 <br>
@@ -38,26 +44,64 @@
 <br>
 
 <div class="container">
-  <div class="row">
+
+  <div class="row" id="task_reaction_id">
     <div class="col-10"></div>
     <div class="col-1">
-      <form action="{% url 'logicaltasks:reaction' task.id %}" method="post">
-        {% csrf_token %}
-        <button style="background-color: transparent; border: none; box-shadow: none"
-                type="submit" name="task" value="like">
-          <i class="far fa-thumbs-up"><span style="margin-left: 5px">{{ task.likes.count }}</span></i>
-        </button>
-      </form>
+      <button data-id="{{ task.id }}" data-type="task" data-action="like" title="Like"
+              style="background-color: transparent; border: none; box-shadow: none"
+              type="button">
+      <span class="far fa-thumbs-up"></span>
+      <span data-count="like">{{ task.reaction.likes.count }}</span>
     </div>
     <div class="col-1">
-      <form action="{% url 'logicaltasks:reaction' task.id %}" method="post">
-        {% csrf_token %}
-        <button style="background-color: transparent; border: none; box-shadow: none"
-                type="submit" name="task" value="dislike">
-          <i class="far fa-thumbs-down"><span style="margin-left: 5px">{{ task.dislikes.count }}</span></i>
-        </button>
-      </form>
+      <button data-id="{{ task.id }}" data-type="task" data-action="dislike" title="Dislike"
+                style="background-color: transparent; border: none; box-shadow: none"
+                type="button">
+      <span class="far fa-thumbs-down"></span>
+      <span data-count="dislike">{{ task.reaction.dislikes.count }}</span>
     </div>
+  </div>
+  {% if user.is_authenticated %}
+  <div class="row">
+    <div class="col">
+      <div class="form-floating" style="text-align: left">
+        <form class="comments" method="post" action="{{ task.get_task_url }}">
+          {{ form }}
+          {% csrf_token %}
+          <button type="submit" class="btn btn-secondary" style="margin-top: 10px;">Отправить</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  <br>
+  <div id="comment_reaction_id">
+    {% for comment in task.comment_set.all %}
+    <div class="row"
+         style="text-align: left;
+         border-bottom: 1px solid #ccc;
+         margin-top: 16px">
+      <div class="col-10">
+        <p style="font-size: 15px">{{ comment.text }}</p>
+      </div>
+      <div class="col-1">
+        <button data-id="{{ comment.id }}" data-type="comment" data-action="like" title="Like"
+                style="background-color: transparent; border: none; box-shadow: none"
+                type="button">
+        <span class="far fa-thumbs-up"></span>
+        <span data-count="like">{{ comment.reaction.likes.count }}</span>
+      </div>
+      <div class="col-1">
+        <button data-id="{{ comment.id }}" data-type="comment" data-action="dislike" title="Dislike"
+                  style="background-color: transparent; border: none; box-shadow: none"
+                  type="button">
+        <span class="far fa-thumbs-down"></span>
+        <span data-count="dislike">{{ comment.reaction.dislikes.count }}</span>
+      </div>
+    </div>
+    <br>
+    {% endfor %}
   </div>
 </div>
 
@@ -65,4 +109,5 @@
 
 
 {% endif %}
+
 {% endblock %}

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Task, Image, ImageAnswer
+from .models import Task, Image, ImageAnswer, Comment
 # Register your models here.
 
 @admin.register(Task)
@@ -24,4 +24,4 @@ class TaskAdmin(admin.ModelAdmin):
 
 admin.site.register(Image)
 admin.site.register(ImageAnswer)
-
+admin.site.register(Comment)
