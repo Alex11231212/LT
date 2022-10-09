@@ -13,9 +13,7 @@ class TaskModelTest(TestCase):
             text='text',
             answer='answer',
             difficulty='u',
-            likes='1',
-            dislikes='1',
-            slug=slugify(title)
+            slug=title
         )
 
     def test_title_label(self):
@@ -61,5 +59,5 @@ class TaskModelTest(TestCase):
     def test_get_absolute_url(self):
         task = Task.objects.get(id=1)
         # This will also fail if the urlconf is not defined.
-        self.assertEqual(task.get_absolute_url(), '/lt/tasks/task1/')
+        self.assertEqual(task.get_task_url(), '/lt/task/task1/')
 

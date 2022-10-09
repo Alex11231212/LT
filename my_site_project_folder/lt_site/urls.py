@@ -1,4 +1,4 @@
-"""LogicalTasks URL Configuration
+"""lt_site URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.0/topics/http/urls/
@@ -17,13 +17,16 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from logicaltasks import views
 
-from LogicalTasks import settings
+from lt_site import settings
 
 
 urlpatterns = [
     path('', RedirectView.as_view(url='lt/', permanent=True)),
     path('lt/', include('logicaltasks.urls')),
+    path('api/v1/tasklist/', views.TaskListAPIView.as_view()),
+    path('api/v1/test/', views.TestView.as_view()),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

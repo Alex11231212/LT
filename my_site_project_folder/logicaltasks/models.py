@@ -65,8 +65,7 @@ class Task(models.Model):
                               help_text='Выберите картинку для задачи с иллюстрацией',)
     slug = models.SlugField(max_length=255, unique=True,
                             db_index=True, verbose_name='URL')
-    pub_date = models.DateField(default=timezone.now())
-
+    pub_date = models.DateField(default=timezone.now)
     def __str__(self):
         """String for representing the Model object."""
         return self.title
@@ -89,7 +88,7 @@ class Comment(models.Model):
                                        blank=True,
                                        null=True,
                                        )
-    pub_date = models.DateField(default=timezone.now())
+    pub_date = models.DateField(default=timezone.now)
 
 
 class LikeDislikeManager(models.Manager):
@@ -122,7 +121,8 @@ class LikeDislike(models.Model):
     )
 
     vote = models.SmallIntegerField(verbose_name=_("Голос"), choices=VOTES)
-    user = models.ForeignKey(User, verbose_name=_("Пользователь"), on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name=_("Пользователь"),
+                             on_delete=models.CASCADE)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()

@@ -3,16 +3,20 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
-from django.forms import ModelForm
+from django.forms import model_to_dict
+from django.http import HttpResponseRedirect, HttpResponse
+from django.urls import reverse
+from django.views import generic, View
 from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
-from django.urls import reverse
-from django.views import generic, View
+from rest_framework import generics, views
+from rest_framework.response import Response
 
 from .forms import CommentForm
 from .models import Task, LikeDislike, Comment
-from django.http import HttpResponseRedirect, HttpResponse
+
+from .serializers import TaskSerializer
 
 
 def index_view(request):
@@ -21,18 +25,19 @@ def index_view(request):
 
 
 class TaskListView(generic.ListView):
+    paginate_by = 10
+
     def get_queryset(self):
         level = self.kwargs['level']
-        return Task.objects.filter(difficulty=level)
+        return Task.objects.filter(difficulty=level).order_by('pub_date')
 
-@login_required
 def task_detail_view(request, task_slug):
     template = 'logicaltasks/task_detail.html'
     tasks = Task.objects.select_related('author', 'image', 'image_answer') \
         .prefetch_related('comment_set')
     task = get_object_or_404(tasks, slug=task_slug)
 
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.is_authenticated:
         comment_form = CommentForm(request.POST)
 
         if comment_form.is_valid():
@@ -86,3 +91,24 @@ class ReactionView(LoginRequiredMixin, View):
         )
 
 
+class TaskListAPIView(generics.ListAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+
+class TestView(views.APIView):
+
+    def get(self, request):
+        tasks = Task.objects.all().values()
+
+        return Response({'tasks': list(tasks)})
+
+
+    def post(self, request):
+        task_object = Task.objects.create(
+            title=request.data['title'],
+            text=request.data['text'],
+            answer=request.data['answer'],
+        )
+        return Response({'task': model_to_dict(task_object),
+                         'status': 'created successfully'})

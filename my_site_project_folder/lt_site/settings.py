@@ -16,15 +16,18 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+env = Env()
+env.read_env()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1&kohaxcl5!y@0=ab_@yv&-w$z1it$jr%9+nf0gqvxkjp(!(j&'
+DEFAULT_SECRET_KEY = 'django-insecure-1&kohaxcl5!y@0=ab_@yv&-w$z1it$jr%9+nf0gqvxkjp(!(j&'
+SECRET_KEY = env.str('SECRET_KEY') or DEFAULT_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG_IN_DEVELOPMENT = False
+DEBUG = env.str('DEBUG') if not None else DEBUG_IN_DEVELOPMENT
 
 ALLOWED_HOSTS = ['*']
 
@@ -42,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'logicaltasks.apps.LogicaltasksConfig',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -54,7 +58,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'LogicalTasks.urls'
+ROOT_URLCONF = 'lt_site.urls'
 
 TEMPLATES = [
     {
@@ -72,14 +76,13 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'LogicalTasks.wsgi.application'
+WSGI_APPLICATION = 'lt_site.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-env = Env()
-env.read_env()
+
 DB = env.str('DB')
 USER = env.str('USER')
 PASSWORD = env.str('PASSWORD')

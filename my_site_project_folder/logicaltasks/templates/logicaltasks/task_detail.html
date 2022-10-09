@@ -48,16 +48,20 @@
   <div class="row" id="task_reaction_id">
     <div class="col-10"></div>
     <div class="col-1">
+      {% if user.is_authenticated %}
       <button data-id="{{ task.id }}" data-type="task" data-action="like" title="Like"
               style="background-color: transparent; border: none; box-shadow: none"
               type="button">
+      {% endif %}
       <span class="far fa-thumbs-up"></span>
       <span data-count="like">{{ task.reaction.likes.count }}</span>
     </div>
     <div class="col-1">
+      {% if user.is_authenticated %}
       <button data-id="{{ task.id }}" data-type="task" data-action="dislike" title="Dislike"
                 style="background-color: transparent; border: none; box-shadow: none"
                 type="button">
+      {% endif %}
       <span class="far fa-thumbs-down"></span>
       <span data-count="dislike">{{ task.reaction.dislikes.count }}</span>
     </div>
@@ -86,16 +90,20 @@
         <p style="font-size: 15px">{{ comment.text }}</p>
       </div>
       <div class="col-1">
+        {% if user.is_authenticated %}
         <button data-id="{{ comment.id }}" data-type="comment" data-action="like" title="Like"
                 style="background-color: transparent; border: none; box-shadow: none"
                 type="button">
+        {% endif %}
         <span class="far fa-thumbs-up"></span>
         <span data-count="like">{{ comment.reaction.likes.count }}</span>
       </div>
       <div class="col-1">
+        {% if user.is_authenticated %}
         <button data-id="{{ comment.id }}" data-type="comment" data-action="dislike" title="Dislike"
                   style="background-color: transparent; border: none; box-shadow: none"
                   type="button">
+        {% endif %}
         <span class="far fa-thumbs-down"></span>
         <span data-count="dislike">{{ comment.reaction.dislikes.count }}</span>
       </div>
