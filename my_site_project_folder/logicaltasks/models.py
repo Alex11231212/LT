@@ -9,14 +9,6 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
-# class Category(models.Model):
-#     name = models.CharField(max_length=200,)
-#
-#     def __str__(self):
-#         """String for representing the Model object."""
-#         return self.name
-
-
 class Image(models.Model):
     title = models.CharField(max_length=30)
     photo = models.ImageField(upload_to='pics')

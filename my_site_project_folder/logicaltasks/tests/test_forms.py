@@ -1,8 +1,4 @@
-import datetime
-
 from django.test import TestCase, SimpleTestCase
-from django.utils import timezone
-
 from ..forms import CommentForm
 
 

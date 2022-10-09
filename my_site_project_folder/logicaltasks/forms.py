@@ -1,30 +1,8 @@
 import datetime
 
 from django import forms
-
 from django.core.exceptions import ValidationError
-from django.forms import ModelForm,  widgets
 from django.utils.translation import gettext_lazy as _
-
-from logicaltasks.models import Comment
-
-
-# class CommentModelForm(ModelForm):
-#
-#     class Meta:
-#         model = Comment
-#
-#         fields = ('text',)
-#         labels = {
-#             'text': 'Оставить комментарий'
-#         }
-#         widgets = {
-#             'text': forms.TextInput(attrs={
-#                 'class': 'form-control',
-#                 'id': 'floatingTextarea2',
-#                 'style': 'height: 100px',
-#             })
-#         }
 
 
 class CommentForm(forms.Form):
