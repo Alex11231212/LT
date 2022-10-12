@@ -25,4 +25,4 @@ urlpatterns = [
          views.ReactionView.as_view(model=Comment, vote_type=LikeDislike.DISLIKE),
          name='comment_dislike')
 
-    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    ]
