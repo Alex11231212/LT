@@ -1,6 +1,6 @@
 asgiref==3.5.0
 autopep8==1.6.0
-Django==4.0.4
+Django==4.0.8
 djangorestframework==3.13.1
 environs==9.5.0
 marshmallow==3.17.1
