@@ -20,6 +20,7 @@ services:
       - "80:80"
     volumes:
       - ./my_site_project_folder/static:/var/www/html/static
+      - ./my_site_project_folder/media:/var/www/html/media
       - ./nginx_conf.d:/etc/nginx/conf.d
 volumes:
   pg_data:
